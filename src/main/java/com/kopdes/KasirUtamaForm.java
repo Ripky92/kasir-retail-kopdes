@@ -197,6 +197,23 @@ public class KasirUtamaForm extends javax.swing.JFrame {
             }
         });
 
+        txtCariNota.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                muatTabelRiwayat();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                muatTabelRiwayat();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                muatTabelRiwayat();
+            }
+        });
+
         tblKatalog.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
