@@ -1,0 +1,23 @@
+PANDUAN MEMASANG LOGO BUATAN SENDIRI PADA RETAIL KOPDES
+
+Folder ini disiapkan agar Anda bisa menambahkan gambar logo atau kode QRIS
+buatan sendiri kapan saja tanpa perlu mengubah logika program Java.
+
+Cukup simpan file berformat PNG ke dalam folder ini (src/main/resources/logo/)
+dengan salah satu nama persis berikut:
+
+1. logo-ikon.png
+   - Ukuran saran : 128 x 128 piksel (persegi, latar belakang transparan)
+   - Lokasi tampil: Pojok kiri Header Utama (menggantikan lencana teks [RK])
+                    sekaligus menjadi ikon aplikasi di taskbar/titlebar.
+
+2. logo-login.png
+   - Ukuran saran : 200 x 80 piksel (horizontal/persegi, latar transparan)
+   - Lokasi tampil: Bagian atas kartu Halaman Login saat aplikasi pertama dibuka.
+
+3. qris-kopdes.png
+   - Ukuran saran : 220 x 220 piksel (persegi)
+   - Lokasi tampil: Dialog Pembayaran saat metode bayar QRIS dipilih.
+
+Setelah menaruh file PNG di folder ini, jalankan ulang proyek (Clean & Build / Run
+di Apache NetBeans) maka gambar buatan Anda langsung muncul otomatis.
