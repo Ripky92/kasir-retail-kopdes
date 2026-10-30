@@ -188,71 +188,93 @@ public class BayarDialog extends javax.swing.JDialog {
         String waktuSekarang = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
         try (Connection conn = KoneksiDB.ambilKoneksi()) {
-            conn.setAutoCommit(false);
-            try {
-                String noNota = KoneksiDB.buatNomorNotaBaru(conn);
+            return jalankanTransaksiPadaKoneksi(
+                    conn, idPengguna, jenisPembeli, itemKeranjang,
+                    subtotal, potonganAnggota, totalBayar, metodeBayar, uangBayar, waktuSekarang
+            );
+        }
+    }
 
-                String sqlNota = """
-                    INSERT INTO transaksi (
-                        no_nota, tanggal_waktu, id_pengguna, jenis_pembeli,
-                        subtotal, potongan_anggota, total_bayar, metode_bayar, uang_bayar, kembalian
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    """;
-                try (PreparedStatement psNota = conn.prepareStatement(sqlNota)) {
-                    psNota.setString(1, noNota);
-                    psNota.setString(2, waktuSekarang);
-                    psNota.setInt(3, idPengguna);
-                    psNota.setString(4, jenisPembeli);
-                    psNota.setLong(5, subtotal);
-                    psNota.setLong(6, potonganAnggota);
-                    psNota.setLong(7, totalBayar);
-                    psNota.setString(8, metodeBayar);
-                    psNota.setLong(9, uangBayar);
-                    psNota.setLong(10, kembalian);
-                    psNota.executeUpdate();
-                }
+    static String jalankanTransaksiPadaKoneksi(
+            Connection conn,
+            int idPengguna,
+            String jenisPembeli,
+            List<String[]> itemKeranjang,
+            long subtotal,
+            long potonganAnggota,
+            long totalBayar,
+            String metodeBayar,
+            long uangBayar,
+            String waktuSekarang) throws Exception {
+        long kembalian = uangBayar - totalBayar;
+        conn.setAutoCommit(false);
+        try {
+            String noNota = KoneksiDB.buatNomorNotaBaru(conn);
 
-                String sqlPotongStok = "UPDATE barang SET stok = stok - ? WHERE kode_barang = ? AND stok >= ?";
-                String sqlDetail = """
-                    INSERT INTO detail_transaksi (
-                        no_nota, kode_barang, nama_barang, harga_satuan, jumlah, subtotal_item
-                    ) VALUES (?, ?, ?, ?, ?, ?)
-                    """;
-
-                try (PreparedStatement psStok = conn.prepareStatement(sqlPotongStok);
-                     PreparedStatement psDetail = conn.prepareStatement(sqlDetail)) {
-                    for (String[] baris : itemKeranjang) {
-                        String kode = baris[0];
-                        String nama = baris[1];
-                        long hargaSatuan = Long.parseLong(baris[2]);
-                        int jumlah = Integer.parseInt(baris[3]);
-                        long subItem = Long.parseLong(baris[4]);
-
-                        psStok.setInt(1, jumlah);
-                        psStok.setString(2, kode);
-                        psStok.setInt(3, jumlah);
-                        int barisTerubah = psStok.executeUpdate();
-                        if (barisTerubah == 0) {
-                            throw new IllegalArgumentException(
-                                    "Stok barang \"" + nama + "\" tidak mencukupi untuk jumlah " + jumlah + ".");
-                        }
-
-                        psDetail.setString(1, noNota);
-                        psDetail.setString(2, kode);
-                        psDetail.setString(3, nama);
-                        psDetail.setLong(4, hargaSatuan);
-                        psDetail.setInt(5, jumlah);
-                        psDetail.setLong(6, subItem);
-                        psDetail.executeUpdate();
-                    }
-                }
-
-                conn.commit();
-                return noNota;
-            } catch (Exception ex) {
-                conn.rollback();
-                throw ex;
+            String sqlNota = """
+                INSERT INTO transaksi (
+                    no_nota, tanggal_waktu, id_pengguna, jenis_pembeli,
+                    subtotal, potongan_anggota, total_bayar, metode_bayar, uang_bayar, kembalian
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """;
+            try (PreparedStatement psNota = conn.prepareStatement(sqlNota)) {
+                psNota.setString(1, noNota);
+                psNota.setString(2, waktuSekarang);
+                psNota.setInt(3, idPengguna);
+                psNota.setString(4, jenisPembeli);
+                psNota.setLong(5, subtotal);
+                psNota.setLong(6, potonganAnggota);
+                psNota.setLong(7, totalBayar);
+                psNota.setString(8, metodeBayar);
+                psNota.setLong(9, uangBayar);
+                psNota.setLong(10, kembalian);
+                psNota.executeUpdate();
             }
+
+            String sqlPotongStok = "UPDATE barang SET stok = stok - ? WHERE kode_barang = ? AND stok >= ?";
+            String sqlDetail = """
+                INSERT INTO detail_transaksi (
+                    no_nota, kode_barang, nama_barang, harga_satuan, jumlah, subtotal_item
+                ) VALUES (?, ?, ?, ?, ?, ?)
+                """;
+
+            try (PreparedStatement psStok = conn.prepareStatement(sqlPotongStok);
+                 PreparedStatement psDetail = conn.prepareStatement(sqlDetail)) {
+                for (String[] baris : itemKeranjang) {
+                    String kode = baris[0];
+                    String nama = baris[1];
+                    long hargaSatuan = Long.parseLong(baris[2]);
+                    int jumlah = Integer.parseInt(baris[3]);
+                    long subItem = Long.parseLong(baris[4]);
+
+                    psStok.setInt(1, jumlah);
+                    psStok.setString(2, kode);
+                    psStok.setInt(3, jumlah);
+                    int barisTerubah = psStok.executeUpdate();
+                    if (barisTerubah == 0) {
+                        throw new IllegalArgumentException(
+                                "Stok barang \"" + nama + "\" tidak mencukupi untuk jumlah " + jumlah + ".");
+                    }
+
+                    psDetail.setString(1, noNota);
+                    psDetail.setString(2, kode);
+                    psDetail.setString(3, nama);
+                    psDetail.setLong(4, hargaSatuan);
+                    psDetail.setInt(5, jumlah);
+                    psDetail.setLong(6, subItem);
+                    psDetail.executeUpdate();
+                }
+            }
+
+            conn.commit();
+            return noNota;
+        } catch (Exception ex) {
+            try {
+                conn.rollback();
+            } catch (java.sql.SQLException rollbackEx) {
+                ex.addSuppressed(rollbackEx);
+            }
+            throw ex;
         }
     }
 
@@ -578,3 +600,4 @@ public class BayarDialog extends javax.swing.JDialog {
     private javax.swing.JTextField txtUangDiterima;
     // End of variables declaration//GEN-END:variables
 }
+

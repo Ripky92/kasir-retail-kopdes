@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import java.nio.file.Path;
+import java.sql.Connection;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -233,5 +234,54 @@ class AlurKasirDatabaseTest {
         java.lang.reflect.Field f = pemilik.getClass().getDeclaredField(namaField);
         f.setAccessible(true);
         return tipe.cast(f.get(pemilik));
+    }
+
+    @Test
+    void kegagalanRollbackTidakMenutupiPesanGalatUtamaTransaksi() {
+        Connection koneksiGagalRollback = (Connection) java.lang.reflect.Proxy.newProxyInstance(
+                Connection.class.getClassLoader(),
+                new Class<?>[]{Connection.class},
+                (proxy, method, args) -> {
+                    if ("setAutoCommit".equals(method.getName()) || "close".equals(method.getName())) {
+                        return null;
+                    }
+                    if ("prepareStatement".equals(method.getName())) {
+                        throw new IllegalArgumentException("Stok barang tidak mencukupi");
+                    }
+                    if ("rollback".equals(method.getName())) {
+                        throw new java.sql.SQLException("Koneksi putus saat rollback");
+                    }
+                    throw new UnsupportedOperationException(method.getName());
+                }
+        );
+        List<String[]> item = List.<String[]>of(new String[]{"BRG001", "Beras", "68000", "1", "68000"});
+        IllegalArgumentException utama = assertThrows(IllegalArgumentException.class, () ->
+                BayarDialog.jalankanTransaksiPadaKoneksi(
+                        koneksiGagalRollback, 1, "Umum", item, 68_000L, 0L, 68_000L, "Tunai", 70_000L, "2026-10-31 10:00:00"
+                )
+        );
+        assertEquals("Stok barang tidak mencukupi", utama.getMessage());
+        assertEquals(1, utama.getSuppressed().length);
+    }
+
+    @Test
+    void panduanLaporanSesuaiDenganNamaMetodeKategoriDanJumlahBarisKode() throws Exception {
+        String panduan = java.nio.file.Files.readString(Path.of("PANDUAN_LAPORAN_DAN_BEDAH_KODE.md"));
+        assertTrue(panduan.contains("isiDataAwalJikaKosong"));
+        assertTrue(panduan.contains("lokasiDatabase"));
+        assertFalse(panduan.contains("isiPenggunaAwal"));
+        assertFalse(panduan.contains("isiBarangAwal"));
+        assertFalse(panduan.contains("FORMAT_RUPIAH"));
+        assertFalse(panduan.contains("lokasiFileDatabase"));
+        assertFalse(panduan.contains("Alat Tulis & Lainnya"));
+
+        String[] daftarFile = {"KoneksiDB", "LoginForm", "KasirUtamaForm", "BayarDialog", "StrukDialog"};
+        for (String nama : daftarFile) {
+            long jumlahBaris = java.nio.file.Files.lines(Path.of("src/main/java/com/kopdes/" + nama + ".java")).count();
+            assertTrue(
+                    panduan.contains(nama + ".java` (" + jumlahBaris + " Baris)"),
+                    "Jumlah baris " + nama + ".java di panduan harus tepat " + jumlahBaris + " Baris"
+            );
+        }
     }
 }

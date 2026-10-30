@@ -42,12 +42,22 @@ public class KoneksiDB {
     }
 
     public static Connection ambilKoneksi() throws SQLException {
-        Connection conn = DriverManager.getConnection("jdbc:sqlite:" + lokasiDatabase);
+        return aktifkanForeignKey(DriverManager.getConnection("jdbc:sqlite:" + lokasiDatabase));
+    }
+
+    static Connection aktifkanForeignKey(Connection conn) throws SQLException {
         // SQLite mematikan foreign key secara bawaan; wajib diaktifkan tiap koneksi dibuka.
         try (Statement st = conn.createStatement()) {
             st.execute("PRAGMA foreign_keys = ON;");
+            return conn;
+        } catch (SQLException ex) {
+            try {
+                conn.close();
+            } catch (SQLException tutupEx) {
+                ex.addSuppressed(tutupEx);
+            }
+            throw ex;
         }
-        return conn;
     }
 
     public static void siapkanDatabase() {
@@ -200,20 +210,27 @@ public class KoneksiDB {
     public static String buatNomorNotaBaru(Connection conn) throws SQLException {
         String tanggalHariIni = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE);
         String awalan = "KPD-" + tanggalHariIni + "-";
-        int urutanBerikutnya = 1;
+        int urutanTertinggi = 0;
 
         try (PreparedStatement ps = conn.prepareStatement(
-                "SELECT no_nota FROM transaksi WHERE no_nota LIKE ? ORDER BY no_nota DESC LIMIT 1")) {
+                "SELECT no_nota FROM transaksi WHERE no_nota LIKE ?")) {
             ps.setString(1, awalan + "%");
             try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    String notaTerakhir = rs.getString(1);
-                    String angkaAkhir = notaTerakhir.substring(awalan.length());
-                    urutanBerikutnya = Integer.parseInt(angkaAkhir) + 1;
+                while (rs.next()) {
+                    String nota = rs.getString(1);
+                    if (nota != null && nota.startsWith(awalan)) {
+                        String akhiran = nota.substring(awalan.length());
+                        if (akhiran.matches("\\d+")) {
+                            try {
+                                urutanTertinggi = Math.max(urutanTertinggi, Integer.parseInt(akhiran));
+                            } catch (NumberFormatException ignored) {
+                            }
+                        }
+                    }
                 }
             }
         }
-        return String.format("%s%03d", awalan, urutanBerikutnya);
+        return String.format("%s%03d", awalan, urutanTertinggi + 1);
     }
 
     public static ImageIcon muatLogoOpsional(String namaFile, int lebar, int tinggi) {

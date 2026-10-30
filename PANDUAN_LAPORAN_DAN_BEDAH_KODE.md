@@ -153,7 +153,7 @@ erDiagram
 | :--- | :--- | :--- | :--- |
 | `kode_barang` | `TEXT` | `PRIMARY KEY` | Kode unik produk koperasi (contoh: `BRG001`). |
 | `nama_barang` | `TEXT` | `NOT NULL` | Nama produk yang tampil di katalog dan struk. |
-| `kategori` | `TEXT` | `NOT NULL` | Kelompok barang (`Sembako`, `Minuman`, `Makanan Ringan`, `Kebutuhan Rumah`, `Alat Tulis & Lainnya`). |
+| `kategori` | `TEXT` | `NOT NULL` | Kelompok barang (`Sembako`, `Minuman`, `Kebutuhan Rumah`, `Lainnya`). |
 | `harga` | `INTEGER` | `NOT NULL CHECK (harga >= 0)` | Harga jual satuan dalam Rupiah bulat 64-bit (`long` di Java). |
 | `stok` | `INTEGER` | `NOT NULL CHECK (stok >= 0)` | Sisa stok fisik barang yang tersedia untuk dijual. |
 
@@ -230,36 +230,35 @@ Bagian ini menjelaskan isi setiap file dari atas ke bawah dengan bahasa sehari-h
 
 ---
 
-### 4.1 Bedah File 1: `KoneksiDB.java` (246 Baris)
+### 4.1 Bedah File 1: `KoneksiDB.java` (263 Baris)
 File ini adalah **"jantung penghubung database dan alat bantu berhitung Rupiah"** yang dipanggil oleh keempat form lainnya.
 
-- **Baris 1 - 19 (`package` & `import`):** Mendeklarasikan paket `com.kopdes` dan memanggil pustaka bawaan Java (`java.sql.*` untuk database JDBC, `java.awt.Color` & `Image` untuk warna dan logo, `NumberFormat` untuk pemisah titik ribuan Indonesia).
-- **Baris 23 - 31 (Konstanta Warna & Diskon):** Menyimpan seluruh palet warna aplikasi di satu tempat (`WARNA_HEADER` hijau tua `#065F46`, `WARNA_LATAR` mint lembut `#F0FDF4`, `WARNA_TOMBOL_BAYAR` oranye bata `#C2410C`, `WARNA_BAHAYA` merah `#B91C1C`) serta konstanta `PERSEN_DISKON_ANGGOTA = 5`. Tujuannya agar warna seragam di semua jendela dan tidak perlu mengetik angka RGB berulang-ulang.
-- **Baris 33 - 45 (`FORMAT_RUPIAH` & `aturLokasiDatabase`):**
-  - `FORMAT_RUPIAH` memakai lokal `id-ID` agar angka `68000` otomatis diberi titik menjadi `68.000`.
-  - `lokasiFileDatabase` secara bawaan menunjuk ke file `"kopdes.db"` di folder proyek. Metode `aturLokasiDatabase()` disediakan agar pengujian otomatis JUnit bisa memakai file database sementara tanpa mengotori data asli Anda.
-- **Baris 47 - 54 (`ambilKoneksi()`):**
-  - Membuka jalur komunikasi ke file SQLite melalui `DriverManager.getConnection("jdbc:sqlite:" + lokasiFileDatabase)`.
-  - Menjalankan perintah penting `PRAGMA foreign_keys = ON`. Pada SQLite, penjaga relasi antar tabel (`FOREIGN KEY`) secara bawaan mati setiap kali koneksi baru dibuka, sehingga baris ini wajib dipanggil agar relasi tabel `transaksi`, `barang`, dan `detail_transaksi` benar-benar dijaga.
-- **Baris 56 - 117 (`siapkanDatabase()`):**
-  - Menggunakan blok `try (Connection conn = ...; Statement stmt = ...)` (*try-with-resources*) supaya koneksi database otomatis ditutup rapi setelah selesai dipakai.
+- **Baris 1 - 19 (`package` & `import`):** Mendeklarasikan paket `com.kopdes` dan memanggil pustaka bawaan Java (`java.sql.*` untuk database JDBC, `java.awt.Color` & `Image` untuk warna dan logo, `DecimalFormat` untuk pemisah titik ribuan Indonesia).
+- **Baris 23 - 34 (Konstanta Warna & Diskon):** Menyimpan seluruh palet warna aplikasi di satu tempat (`WARNA_HEADER` hijau tua `#065F46`, `WARNA_LATAR` mint lembut `#F0FDF4`, `WARNA_TOMBOL_BAYAR` oranye bata `#C2410C`, `WARNA_BAHAYA` merah `#B91C1C`) serta konstanta `PERSEN_DISKON_ANGGOTA = 5`. Tujuannya agar warna seragam di semua jendela dan tidak perlu mengetik angka RGB berulang-ulang.
+- **Baris 36 - 42 (`lokasiDatabase` & `aturLokasiDatabase`):**
+  - `lokasiDatabase` secara bawaan menunjuk ke file `"kopdes.db"` di folder proyek. Metode `aturLokasiDatabase()` disediakan agar pengujian otomatis JUnit bisa memakai file database sementara tanpa mengotori data asli Anda.
+- **Baris 44 - 61 (`ambilKoneksi()` & `aktifkanForeignKey`):**
+  - Membuka jalur komunikasi ke file SQLite melalui `DriverManager.getConnection("jdbc:sqlite:" + lokasiDatabase)`.
+  - Menjalankan perintah penting `PRAGMA foreign_keys = ON;` melalui `aktifkanForeignKey()`. Pada SQLite, penjaga relasi antar tabel (`FOREIGN KEY`) secara bawaan mati setiap kali koneksi baru dibuka, sehingga baris ini wajib dipanggil agar relasi tabel `transaksi`, `barang`, dan `detail_transaksi` benar-benar dijaga. Jika pengaktifan PRAGMA gagal, koneksi langsung ditutup kembali agar file `kopdes.db` tidak terkunci.
+- **Baris 63 - 119 (`siapkanDatabase()`):**
+  - Menggunakan blok `try (Connection conn = ...; Statement st = ...)` (*try-with-resources*) supaya koneksi database otomatis ditutup rapi setelah selesai dipakai.
   - Menjalankan 4 perintah `CREATE TABLE IF NOT EXISTS` untuk membuat tabel `pengguna`, `barang`, `transaksi`, dan `detail_transaksi`. Kata `IF NOT EXISTS` menjamin jika tabel sudah ada, data lama Anda **tidak akan tertimpa atau hilang**.
-  - Memanggil `isiPenggunaAwal(conn)` dan `isiBarangAwal(conn)`.
-- **Baris 119 - 161 (`isiPenggunaAwal` & `isiBarangAwal`):**
-  - Mengecek jumlah isi tabel menggunakan `SELECT COUNT(*)`. Hanya jika jumlahnya `0` (database benar-benar baru pertama kali dibuat), program memasukkan 2 akun bawaan (`admin` & `kasir`) serta 10 produk awal koperasi desa.
-- **Baris 163 - 191 (`formatRupiah` & `parseNominalRupiah`):**
-  - `formatRupiah(long nominal)` mengubah angka bulat `long` menjadi teks `"Rp 68.000"` (atau `"-Rp 5.000"` jika negatif).
-  - `parseNominalRupiah(String teksInput)` adalah kebalikannya: membuang tulisan `"Rp"`, spasi, dan tanda titik `.` sehingga ketikan pengguna seperti `"50.000"` atau `"Rp 50.000"` tetap aman dibaca menjadi angka `50000L`. Jika ketikan mengandung huruf tidak valid, mengembalikan `-1L` sebagai penanda input salah.
-- **Baris 193 - 198 (`hitungPotonganAnggota`):**
-  - Jika bukan anggota, mengembalikan `0L`. Jika anggota, menghitung `Math.round(subtotal * (5 / 100.0))` agar pembulatan 5% selalu utuh dalam Rupiah terdekat tanpa sisa koma desimal.
-- **Baris 200 - 217 (`buatNomorNotaBaru`):**
-  - Membuat kode nota otomatis berformat `KPD-YYYYMMDD-NNN` (misalnya `KPD-20261031-001`). Caranya mengecek nomor nota terakhir hari ini lewat `SELECT MAX(no_nota) FROM transaksi WHERE no_nota LIKE 'KPD-20261031-%'`, mengambil 3 digit buntutnya, lalu menambah `+ 1`.
-- **Baris 219 - 245 (`muatLogoOpsional`):**
-  - Mencari file gambar PNG di dalam folder `src/main/resources/logo/` (atau folder kerja proyek). Jika ketemu, ukurannya dihaluskan dengan `SCALE_SMOOTH`. Jika file gambar belum Anda buat, metode ini mengembalikan `null` dengan aman sehingga aplikasi otomatis memakai teks `[RK]` tanpa error.
+  - Memanggil `isiDataAwalJikaKosong(conn)`.
+- **Baris 121 - 171 (`isiDataAwalJikaKosong`):**
+  - Mengecek jumlah isi tabel `pengguna` dan `barang` menggunakan `SELECT COUNT(*)`. Hanya jika jumlahnya `0` (database benar-benar baru pertama kali dibuat), program memasukkan 2 akun bawaan (`admin` & `kasir`) serta 10 produk awal koperasi desa memakai `executeBatch()`.
+- **Baris 173 - 201 (`formatRupiah` & `parseNominalRupiah`):**
+  - `formatRupiah(long nominal)` menggunakan `DecimalFormat("#,###")` dengan pemisah titik `.` untuk mengubah angka bulat `long` menjadi teks `"Rp 68.000"` (atau `"-Rp 5.000"` jika negatif).
+  - `parseNominalRupiah(String teksInput)` adalah kebalikannya: membuang tulisan `"Rp"`, spasi, dan tanda titik `.` sehingga ketikan pengguna seperti `"50.000"` atau `"Rp 50.000"` tetap aman dibaca menjadi angka `50000L`. Jika ketikan mengandung huruf tidak valid atau tanda minus, mengembalikan `-1L` sebagai penanda input salah.
+- **Baris 203 - 208 (`hitungPotonganAnggota`):**
+  - Jika bukan anggota, mengembalikan `0L`. Jika anggota, menghitung `Math.round(subtotal * (PERSEN_DISKON_ANGGOTA / 100.0))` agar pembulatan 5% selalu utuh dalam Rupiah terdekat tanpa sisa koma desimal.
+- **Baris 210 - 234 (`buatNomorNotaBaru`):**
+  - Membuat kode nota otomatis berformat `KPD-YYYYMMDD-NNN` (misalnya `KPD-20261031-001`). Caranya mencari seluruh nota pada tanggal hari ini (`SELECT no_nota FROM transaksi WHERE no_nota LIKE ?`), mengambil urutan angka tertinggi (aman melampaui 999 nota sehari maupun bila ada nota manual), lalu menambah `+ 1`.
+- **Baris 236 - 262 (`muatLogoOpsional`):**
+  - Mencari file gambar PNG di dalam classpath `/logo/` atau folder `src/main/resources/logo/`. Jika ketemu, ukurannya dihaluskan dengan `SCALE_SMOOTH`. Jika file gambar belum Anda buat, metode ini mengembalikan `null` dengan aman sehingga aplikasi otomatis memakai teks `[RK]` tanpa error.
 
 ---
 
-### 4.2 Bedah File 2: `LoginForm.java` (302 Baris)
+### 4.2 Bedah File 2: `LoginForm.java` (303 Baris)
 File ini adalah **pintu gerbang aplikasi** sekaligus tempat fungsi `public static void main` berada.
 
 - **Baris 15 - 58 (Konstruktor `LoginForm()` & `terapkanIdentitasDanLogo()`):**
@@ -271,10 +270,10 @@ File ini adalah **pintu gerbang aplikasi** sekaligus tempat fungsi `public stati
   - Menjalankan `PreparedStatement` dengan query:
     `SELECT id_pengguna, nama_lengkap, peran FROM pengguna WHERE username = ? AND password = ?`
   - Tanda tanya `?` diisi memakai `ps.setString(1, ...)` dan `ps.setString(2, ...)`. Jika cocok, mengembalikan array 3 elemen `{id, nama_lengkap, peran}`.
-- **Baris 84 - 125 (`jalankanProsesLogin()`):**
+- **Baris 84 - 124 (`jalankanProsesLogin()`):**
   - Mengambil teks dari `txtUsername` dan `new String(txtPassword.getPassword())`.
   - Jika salah satu belum diisi, menampilkan pesan merah di `lblPesan` dan mengarahkan kursor fokus ke kotak yang kosong.
-  - Jika login cocok, membuat jendela `new KasirUtamaForm(idPengguna, namaLengkap, peran).setVisible(true)` lalu menutup jendela login dengan `dispose()`.
+  - Jika login cocok, membuat jendela `new KasirUtamaForm(idPengguna, namaLengkap, peran)` lalu menutup jendela login dengan `dispose()`.
   - Jika salah, memblok teks sandi (`selectAll()`) dan menampilkan pesan `"Gagal masuk: Username atau kata sandi tidak sesuai."`.
 - **Baris 128 - 264 (`initComponents()`):** Blok kode otomatis NetBeans yang menata panel header, kartu login putih di tengah, kotak input, dan tombol menggunakan `GroupLayout`.
 - **Baris 266 - 272 (`btnMasukActionPerformed` & `btnKeluarActionPerformed`):** Penangan klik tombol Masuk (memanggil `jalankanProsesLogin()`) dan Keluar (`System.exit(0)`).
@@ -283,55 +282,55 @@ File ini adalah **pintu gerbang aplikasi** sekaligus tempat fungsi `public stati
 
 ---
 
-### 4.3 Bedah File 3: `KasirUtamaForm.java` (1748 Baris)
-Meskipun jumlah barisnya paling panjang karena memuat tata letak NetBeans untuk 3 tab sekaligus (`initComponents` memakan baris 699-1385), logika intinya terbagi rapi menjadi **4 bagian mudah**:
+### 4.3 Bedah File 3: `KasirUtamaForm.java` (1765 Baris)
+Meskipun jumlah barisnya paling panjang karena memuat tata letak NetBeans untuk 3 tab sekaligus (`initComponents` memakan baris 716-1402), logika intinya terbagi rapi menjadi **4 bagian mudah**:
 
-#### A. Inisialisasi, Hak Akses, & Jam Digital (Baris 31 - 260)
+#### A. Inisialisasi, Hak Akses, & Jam Digital (Baris 31 - 277)
 - **Baris 33 - 40 (Variabel Kelas):** Menyimpan identitas petugas yang sedang login (`idPengguna`, `namaLengkap`, `peran`), daftar belanjaan sementara di memori `daftarKeranjang` (`List<String[]>`), dan `timerJam`.
 - **Baris 44 - 55 (Konstruktor):** Membangun komponen, menyiapkan warna, lalu memuat isi awal ketiga tabel (`muatTabelKatalog()`, `muatTabelStokBarang()`, `muatTabelRiwayat()`).
 - **Baris 161 - 180 (`aturHakAksesPeran()`):** Mengecek `"Admin".equalsIgnoreCase(peran)`. Jika yang login adalah `Kasir`, seluruh kotak teks dan tombol simpan/ubah/hapus di Tab 2 dimatikan (`setEnabled(false)`) dan label info berubah menjadi keterangan mode baca-saja.
-- **Baris 182 - 229 (`pasangPendengarInteraksi()`):**
+- **Baris 182 - 246 (`pasangPendengarInteraksi()`):**
   - Memasang `DocumentListener` pada `txtCariBarang` dan `txtCariNota` agar setiap huruf yang diketik langsung menyaring isi tabel secara seketika tanpa perlu menekan tombol Cari.
   - Memasang `MouseAdapter` klik dua kali (`e.getClickCount() == 2`) pada `tblKatalog` agar kasir bisa memasukkan barang ke keranjang dengan cepat.
   - Memasang `ListSelectionListener` pada `tblStokBarang` (klik baris langsung mengisi form edit) dan `tblRiwayat` (klik nomor nota langsung memuat rincian barang di tabel bawah).
-- **Baris 231 - 260 (`pasangPintasanKeyboard` & `mulaiJamDigital`):**
+- **Baris 248 - 277 (`pasangPintasanKeyboard` & `mulaiJamDigital`):**
   - Mendaftarkan tombol `F2` untuk langsung melompat fokus ke kotak pencarian barang dan `F8` untuk membuka dialog pembayaran.
   - Menjalankan `javax.swing.Timer` setiap `1000` milidetik (1 detik) untuk memperbarui jam digital di pojok kanan atas header.
 
-#### B. Logika Tab 1: Katalog & Keranjang Kasir (Baris 262 - 272 & 357 - 542)
-- **`hitungJumlahBaruKeranjang` (Baris 262 - 272):** Menjumlahkan qty barang yang sudah ada di keranjang dengan tambahan baru, lalu membandingkannya terhadap `stokTersedia`. Jika melebihi sisa stok, melempar `IllegalArgumentException` agar kasir tidak pernah menjual barang melebihi stok gudang.
-- **`muatTabelKatalog` (Baris 357 - 410):** Menyusun query `SELECT` dinamis berdasarkan kategori yang dipilih dan kata kunci pencarian (`LOWER(kode_barang) LIKE ? OR LOWER(nama_barang) LIKE ?`), lalu menampilkan jumlah barang yang ditemukan di `lblStatusKatalog`.
-- **`tambahAtauPerbaruiItemKeranjang` (Baris 441 - 467):** Jika barang yang dipilih sudah ada di `daftarKeranjang`, cukup menambah kolom qty dan menghitung ulang subtotal barisnya; jika belum ada, menambahkan baris baru ke keranjang.
-- **`perbaruiTampilanKeranjang` (Baris 469 - 511):** Menggambar ulang `tblKeranjang`, menjumlahkan `subtotal`, mengecek radio `rbAnggota.isSelected()` untuk menghitung potongan 5%, menampilkan Total Bayar, serta mematikan tombol aksi keranjang & tombol Bayar saat keranjang kosong.
-- **`bukaDialogPembayaran` (Baris 513 - 542):** Membuka `BayarDialog` secara modal. Jika transaksi tuntas (`dialog.apakahTransaksiBerhasil()`), otomatis mengosongkan keranjang dan menyegarkan ulang tabel katalog, tabel stok, dan tabel riwayat supaya angka sisa stok terbaru langsung terlihat.
+#### B. Logika Tab 1: Katalog & Keranjang Kasir (Baris 279 - 289 & 374 - 559)
+- **`hitungJumlahBaruKeranjang` (Baris 279 - 289):** Menjumlahkan qty barang yang sudah ada di keranjang dengan tambahan baru, lalu membandingkannya terhadap `stokTersedia`. Jika melebihi sisa stok, melempar `IllegalArgumentException` agar kasir tidak pernah menjual barang melebihi stok gudang.
+- **`muatTabelKatalog` (Baris 374 - 427):** Menyusun query `SELECT` dinamis berdasarkan kategori yang dipilih dan kata kunci pencarian (`LOWER(kode_barang) LIKE ? OR LOWER(nama_barang) LIKE ?`), lalu menampilkan jumlah barang yang ditemukan di `lblStatusKatalog`.
+- **`tambahAtauPerbaruiItemKeranjang` (Baris 458 - 484):** Jika barang yang dipilih sudah ada di `daftarKeranjang`, cukup menambah kolom qty dan menghitung ulang subtotal barisnya; jika belum ada, menambahkan baris baru ke keranjang.
+- **`perbaruiTampilanKeranjang` (Baris 486 - 528):** Menggambar ulang `tblKeranjang`, menjumlahkan `subtotal`, mengecek radio `rbAnggota.isSelected()` untuk menghitung potongan 5%, menampilkan Total Bayar, serta mematikan tombol aksi keranjang & tombol Bayar saat keranjang kosong.
+- **`bukaDialogPembayaran` (Baris 530 - 559):** Membuka `BayarDialog` secara modal. Jika transaksi tuntas (`dialog.apakahTransaksiBerhasil()`), otomatis mengosongkan keranjang dan menyegarkan ulang tabel katalog, tabel stok, dan tabel riwayat supaya angka sisa stok terbaru langsung terlihat.
 
-#### C. Logika Tab 2: CRUD Data & Stok Barang (Baris 274 - 355 & 544 - 594)
-- **`simpanBarangBaru` (Baris 274 - 295):** Memvalidasi bahwa kode/nama tidak kosong dan harga/stok tidak negatif, mengecek apakah `kode_barang` sudah dipakai, lalu menjalankan `INSERT INTO barang`.
-- **`ubahDataBarang` (Baris 297 - 312):** Menjalankan `UPDATE barang SET nama_barang = ?, kategori = ?, harga = ?, stok = ? WHERE kode_barang = ?`.
-- **`hapusDataBarang` (Baris 314 - 337):** Mengecek terlebih dahulu ke tabel `detail_transaksi` apakah barang ini sudah pernah masuk ke nota penjualan. Jika `COUNT(*) > 0`, program menolak penghapusan dengan pesan sopan dan menyarankan mengubah stok menjadi `0` supaya riwayat nota masa lalu tidak rusak.
-- **`muatTabelStokBarang` (Baris 544 - 569):** Memuat seluruh daftar barang dan memberi label status otomatis: `Habis (0)` jika stok 0, `Stok Menipis` jika stok <= 5, atau `Tersedia`.
+#### C. Logika Tab 2: CRUD Data & Stok Barang (Baris 291 - 372 & 561 - 611)
+- **`simpanBarangBaru` (Baris 291 - 312):** Memvalidasi bahwa kode/nama tidak kosong dan harga/stok tidak negatif, mengecek apakah `kode_barang` sudah dipakai, lalu menjalankan `INSERT INTO barang`.
+- **`ubahDataBarang` (Baris 314 - 329):** Menjalankan `UPDATE barang SET nama_barang = ?, kategori = ?, harga = ?, stok = ? WHERE kode_barang = ?`.
+- **`hapusDataBarang` (Baris 331 - 354):** Mengecek terlebih dahulu ke tabel `detail_transaksi` apakah barang ini sudah pernah masuk ke nota penjualan. Jika `COUNT(*) > 0`, program menolak penghapusan dengan pesan sopan dan menyarankan mengubah stok menjadi `0` supaya riwayat nota masa lalu tidak rusak.
+- **`muatTabelStokBarang` (Baris 561 - 586):** Memuat seluruh daftar barang dan memberi label status otomatis: `Habis (0)` jika stok 0, `Stok Menipis` jika stok <= 5, atau `Tersedia`.
 
-#### D. Logika Tab 3: Riwayat Penjualan & Cetak Ulang (Baris 596 - 695 & 1605 - 1663)
-- **`muatTabelRiwayat` (Baris 596 - 661):** Menggabungkan (`JOIN`) tabel `transaksi` dengan tabel `pengguna` agar yang tampil di kolom kasir adalah **nama lengkap petugas**, bukan sekadar angka `id_pengguna`. Sekaligus menjumlahkan `jumlahNota` dan `totalOmset` (`long`) sesuai filter yang aktif.
-- **`muatDetailRiwayatTerpilih` (Baris 663 - 695):** Mengambil daftar item dari `detail_transaksi` berdasarkan `no_nota` yang sedang diklik di tabel atas.
-- **`btnBukaStrukActionPerformed` (Baris 1605 - 1663):** Mengambil kembali data nota beserta rincian itemnya dari database, menyusun teks struk melalui `StrukDialog.susunTeksStruk(...)`, lalu menampilkan `StrukDialog`.
+#### D. Logika Tab 3: Riwayat Penjualan & Cetak Ulang (Baris 613 - 712 & 1622 - 1680)
+- **`muatTabelRiwayat` (Baris 613 - 678):** Menggabungkan (`JOIN`) tabel `transaksi` dengan tabel `pengguna` agar yang tampil di kolom kasir adalah **nama lengkap petugas**, bukan sekadar angka `id_pengguna`. Sekaligus menjumlahkan `jumlahNota` dan `totalOmset` (`long`) sesuai filter yang aktif.
+- **`muatDetailRiwayatTerpilih` (Baris 680 - 712):** Mengambil daftar item dari `detail_transaksi` berdasarkan `no_nota` yang sedang diklik di tabel atas.
+- **`btnBukaStrukActionPerformed` (Baris 1622 - 1680):** Mengambil kembali data nota beserta rincian itemnya dari database, menyusun teks struk melalui `StrukDialog.susunTeksStruk(...)`, lalu menampilkan `StrukDialog`.
 
 ---
 
-### 4.4 Bedah File 4: `BayarDialog.java` (580 Baris)
+### 4.4 Bedah File 4: `BayarDialog.java` (603 Baris)
 File ini bertugas **menyelesaikan pembayaran dan menjamin keamanan penyimpanan transaksi ke database**.
 
 - **Baris 59 - 168 (`siapkanTampilanAwal`, `perbaruiModeMetodeBayar`, `hitungKembalianOtomatis`):**
   - Menampilkan ringkasan total tagihan dalam ukuran besar dan memasang pendengar ketikan pada `txtUangDiterima`.
-  - Saat metode bayar diubah ke **QRIS**, `perbaruiModeMetodeBayar()` otomatis mengisi uang diterima sama persis dengan `totalBayar`, menonaktifkan tombol uang tunai cepat, dan menampilkan panel kode QR (`qris-kopdes.png` atau kotak simulasi QRIS Koperasi Desa).
+  - Saat metode bayar diubah ke **QRIS**, `perbaruiModeMetodeBayar()` otomatis mengisi uang diterima sama persis dengan `totalBayar`, menonaktifkan tombol uang tunai cepat, dan menampilkan info kode QR (`qris-kopdes.png` atau kotak teks simulasi QRIS Koperasi Desa).
   - Saat metode **Tunai**, `hitungKembalianOtomatis()` menghitung `uangInput - totalBayar` secara langsung setiap kali angka diketik: jika uang kurang, pesan berwarna merah dan tombol Selesaikan dikunci; jika cukup, menampilkan nominal kembalian berwarna hijau tua.
-- **Baris 170 - 257 (`simpanTransaksiKeDatabase` - Bagian Paling Penting Saat Ditanya Dosen!):**
-  - Baris 192: `conn.setAutoCommit(false);` mematikan penyimpanan otomatis per kalimat SQL. Artinya tiga proses berikutnya dianggap **satu paket utuh (atomik)**.
-  - Proses 1 (Baris 196-210): Menyimpan 1 baris kepala nota ke tabel `transaksi`.
-  - Proses 2 & 3 (Baris 216-243): Untuk setiap barang di keranjang, menjalankan `UPDATE barang SET stok = stok - ? WHERE kode_barang = ? AND stok >= ?`. Syarat `AND stok >= ?` menjamin stok tidak mungkin tembus menjadi minus! Jika ada 1 saja barang yang stoknya kurang, `barisStokTerpotong` bernilai `0` dan program langsung melempar error ke blok `catch`. Lalu menyimpan baris rincian ke `detail_transaksi`.
-  - Baris 245: `conn.commit();` mengesahkan seluruh perubahan secara permanen karena semua tahap berhasil.
-  - Baris 247-255: Jika terjadi gagal di tengah jalan, `conn.rollback()` dipanggil untuk membatalkan semuanya kembali ke kondisi semula.
-- **Baris 259 - 297 (`prosesPenyelesaianBayar`):** Memanggil `simpanTransaksiKeDatabase()`, menandai `transaksiBerhasil = true`, menutup dialog bayar, lalu membuka `StrukDialog` agar kasir bisa langsung melihat/mencetak nota.
+- **Baris 170 - 279 (`simpanTransaksiKeDatabase` & `jalankanTransaksiPadaKoneksi` - Bagian Paling Penting Saat Ditanya Dosen!):**
+  - Baris 210: `conn.setAutoCommit(false);` mematikan penyimpanan otomatis per kalimat SQL. Artinya tiga proses berikutnya dianggap **satu paket utuh (atomik)**.
+  - Proses 1 (Baris 214-232): Menyimpan 1 baris kepala nota ke tabel `transaksi`.
+  - Proses 2 & 3 (Baris 234-267): Untuk setiap barang di keranjang, menjalankan `UPDATE barang SET stok = stok - ? WHERE kode_barang = ? AND stok >= ?`. Syarat `AND stok >= ?` menjamin stok tidak mungkin tembus menjadi minus! Jika ada 1 saja barang yang stoknya kurang, `barisTerubah` bernilai `0` dan program langsung melempar error ke blok `catch`. Lalu menyimpan baris rincian ke `detail_transaksi`.
+  - Baris 269: `conn.commit();` mengesahkan seluruh perubahan secara permanen karena semua tahap berhasil.
+  - Baris 271-278: Jika terjadi gagal di tengah jalan, `conn.rollback()` dipanggil di dalam pengaman `try-catch` (`ex.addSuppressed`) untuk membatalkan semuanya kembali ke kondisi semula tanpa menutupi pesan penyebab utamanya.
+- **Baris 281 - 319 (`prosesPenyelesaianBayar`):** Memanggil `simpanTransaksiKeDatabase()`, menandai `transaksiBerhasil = true`, menutup dialog bayar, lalu membuka `StrukDialog` agar kasir bisa langsung melihat/mencetak nota.
 
 ---
 
