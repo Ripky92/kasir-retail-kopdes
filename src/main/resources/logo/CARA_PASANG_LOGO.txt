@@ -21,3 +21,4 @@ dengan salah satu nama persis berikut:
 
 Setelah menaruh file PNG di folder ini, jalankan ulang proyek (Clean & Build / Run
 di Apache NetBeans) maka gambar buatan Anda langsung muncul otomatis.
+

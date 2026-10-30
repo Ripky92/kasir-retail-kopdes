@@ -53,3 +53,4 @@ class KoneksiDBTest {
         assertNull(KoneksiDB.muatLogoOpsional("tidak-ada.png", 64, 64));
     }
 }
+
