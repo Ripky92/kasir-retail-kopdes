@@ -1,0 +1,10 @@
+target/
+.superpowers/
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+.idea/
+*.iml
+nbproject/private/
+.DS_Store
