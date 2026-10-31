@@ -4,6 +4,8 @@ target/
 *.db-journal
 *.db-wal
 *.db-shm
+*.sqbpro
+coba
 .idea/
 *.iml
 nbproject/private/

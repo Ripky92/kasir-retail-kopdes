@@ -951,6 +951,22 @@ public class KasirUtamaForm extends javax.swing.JFrame {
 
         panelKiriKatalog.add(panelCariKatalog, java.awt.BorderLayout.NORTH);
 
+        tblKatalog.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Kode", "Nama Barang", "Kategori", "Harga", "Stok"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         tblKatalog.setRowHeight(28);
         scrollKatalog.setViewportView(tblKatalog);
 
@@ -1009,6 +1025,22 @@ public class KasirUtamaForm extends javax.swing.JFrame {
         });
         panelJenisPembeli.add(rbAnggota);
 
+        tblKeranjang.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Kode", "Nama Barang", "Harga", "Qty", "Subtotal"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         tblKeranjang.setRowHeight(28);
         scrollKeranjang.setViewportView(tblKeranjang);
 
@@ -1236,6 +1268,23 @@ public class KasirUtamaForm extends javax.swing.JFrame {
 
         panelTabStok.add(panelFormBarang, java.awt.BorderLayout.NORTH);
 
+        tblStokBarang.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Kode", "Nama Barang", "Kategori", "Harga", "Stok", "Status"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tblStokBarang.setRowHeight(28);
         scrollStokBarang.setViewportView(tblStokBarang);
 
         panelTabStok.add(scrollStokBarang, java.awt.BorderLayout.CENTER);
@@ -1303,12 +1352,46 @@ public class KasirUtamaForm extends javax.swing.JFrame {
         splitRiwayat.setDividerLocation(260);
         splitRiwayat.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
+        tblRiwayat.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "No. Nota", "Tanggal & Waktu", "Petugas", "Pembeli", "Metode Bayar", "Total Bayar"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tblRiwayat.setRowHeight(28);
         scrollRiwayat.setViewportView(tblRiwayat);
 
         splitRiwayat.setTopComponent(scrollRiwayat);
 
         panelBawahDetailRiwayat.setLayout(new java.awt.BorderLayout(0, 8));
 
+        tblDetailRiwayat.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Kode Barang", "Nama Barang", "Harga Satuan", "Jumlah", "Subtotal Item"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tblDetailRiwayat.setRowHeight(26);
         scrollDetailRiwayat.setViewportView(tblDetailRiwayat);
 
         panelBawahDetailRiwayat.add(scrollDetailRiwayat, java.awt.BorderLayout.CENTER);

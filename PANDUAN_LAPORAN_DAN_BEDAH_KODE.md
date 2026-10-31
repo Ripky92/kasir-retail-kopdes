@@ -258,7 +258,7 @@ File ini adalah **"jantung penghubung database dan alat bantu berhitung Rupiah"*
 
 ---
 
-### 4.2 Bedah File 2: `LoginForm.java` (302 Baris)
+### 4.2 Bedah File 2: `LoginForm.java` (301 Baris)
 File ini adalah **pintu gerbang aplikasi** sekaligus tempat fungsi `public static void main` berada.
 
 - **Baris 15 - 58 (Konstruktor `LoginForm()` & `terapkanIdentitasDanLogo()`):**
@@ -282,7 +282,7 @@ File ini adalah **pintu gerbang aplikasi** sekaligus tempat fungsi `public stati
 
 ---
 
-### 4.3 Bedah File 3: `KasirUtamaForm.java` (1704 Baris)
+### 4.3 Bedah File 3: `KasirUtamaForm.java` (1787 Baris)
 Meskipun jumlah barisnya paling panjang karena memuat tata letak NetBeans untuk 3 tab sekaligus (`initComponents` memakan baris 716-1402), logika intinya terbagi rapi menjadi **4 bagian mudah**:
 
 #### A. Inisialisasi, Hak Akses, & Jam Digital (Baris 31 - 277)
@@ -317,7 +317,7 @@ Meskipun jumlah barisnya paling panjang karena memuat tata letak NetBeans untuk 
 
 ---
 
-### 4.4 Bedah File 4: `BayarDialog.java` (601 Baris)
+### 4.4 Bedah File 4: `BayarDialog.java` (594 Baris)
 File ini bertugas **menyelesaikan pembayaran dan menjamin keamanan penyimpanan transaksi ke database**.
 
 - **Baris 59 - 168 (`siapkanTampilanAwal`, `perbaruiModeMetodeBayar`, `hitungKembalianOtomatis`):**

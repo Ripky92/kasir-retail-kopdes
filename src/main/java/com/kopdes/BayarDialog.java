@@ -362,9 +362,6 @@ public class BayarDialog extends javax.swing.JDialog {
         panelIsi.setBorder(javax.swing.BorderFactory.createEmptyBorder(14, 18, 10, 18));
 
         panelRingkasanTagihan.setBackground(new java.awt.Color(236, 253, 245));
-        panelRingkasanTagihan.setBorder(javax.swing.BorderFactory.createCompoundBorder(
-            javax.swing.BorderFactory.createLineBorder(new java.awt.Color(110, 231, 183)),
-            javax.swing.BorderFactory.createEmptyBorder(12, 14, 12, 14)));
 
         lblInfoPembeli.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         lblInfoPembeli.setText("Kategori Pembeli: Umum");
@@ -396,9 +393,6 @@ public class BayarDialog extends javax.swing.JDialog {
         );
 
         panelFormBayar.setBackground(new java.awt.Color(255, 255, 255));
-        panelFormBayar.setBorder(javax.swing.BorderFactory.createCompoundBorder(
-            javax.swing.BorderFactory.createLineBorder(new java.awt.Color(203, 213, 225)),
-            javax.swing.BorderFactory.createEmptyBorder(14, 14, 14, 14)));
 
         lblMetodeBayar.setFont(new java.awt.Font("SansSerif", 1, 13)); // NOI18N
         lblMetodeBayar.setText("Metode Pembayaran");
@@ -468,7 +462,7 @@ public class BayarDialog extends javax.swing.JDialog {
             .addComponent(cmbMetodeBayar, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(lblUangDiterima, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(txtUangDiterima)
-            .addComponent(panelUangCepat, javax.swing.GroupLayout.DEFAULT_SIZE, 412, Short.MAX_VALUE)
+            .addComponent(panelUangCepat, javax.swing.GroupLayout.DEFAULT_SIZE, 608, Short.MAX_VALUE)
             .addComponent(lblInfoQris, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(panelFormBayarLayout.createSequentialGroup()
                 .addComponent(lblKembalianJudul)
@@ -513,8 +507,7 @@ public class BayarDialog extends javax.swing.JDialog {
         getContentPane().add(panelIsi, java.awt.BorderLayout.CENTER);
 
         panelBawah.setBackground(new java.awt.Color(240, 253, 244));
-        panelBawah.setBorder(javax.swing.BorderFactory.createEmptyBorder(6, 18, 16, 18));
-        panelBawah.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 10, 4));
+        panelBawah.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 10, 5));
 
         btnBatal.setFont(new java.awt.Font("SansSerif", 1, 13)); // NOI18N
         btnBatal.setText("Batal (Esc)");

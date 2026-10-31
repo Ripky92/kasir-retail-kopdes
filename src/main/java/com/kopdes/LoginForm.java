@@ -142,6 +142,8 @@ public class LoginForm extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Masuk Petugas - Retail Kopdes");
+        setMinimumSize(new java.awt.Dimension(460, 480));
+        setPreferredSize(new java.awt.Dimension(480, 520));
         setResizable(false);
 
         panelHeader.setBackground(new java.awt.Color(6, 95, 70));
@@ -187,9 +189,6 @@ public class LoginForm extends javax.swing.JFrame {
         panelIsi.setLayout(new java.awt.BorderLayout());
 
         panelKartuLogin.setBackground(new java.awt.Color(255, 255, 255));
-        panelKartuLogin.setBorder(javax.swing.BorderFactory.createCompoundBorder(
-            javax.swing.BorderFactory.createLineBorder(new java.awt.Color(167, 243, 208)),
-            javax.swing.BorderFactory.createEmptyBorder(20, 20, 20, 20)));
 
         lblUsername.setFont(new java.awt.Font("SansSerif", 1, 13)); // NOI18N
         lblUsername.setText("Username Petugas");
