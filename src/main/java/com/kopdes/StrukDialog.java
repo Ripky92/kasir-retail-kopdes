@@ -116,7 +116,6 @@ public class StrukDialog extends javax.swing.JDialog {
         return kiri + " ".repeat(sisaSpasi) + kanan;
     }
 
-    @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 

@@ -184,7 +184,6 @@ public class BayarDialog extends javax.swing.JDialog {
             throw new IllegalArgumentException("Nominal uang diterima kurang dari total tagihan.");
         }
 
-        long kembalian = uangBayar - totalBayar;
         String waktuSekarang = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
         try (Connection conn = KoneksiDB.ambilKoneksi()) {
@@ -317,7 +316,6 @@ public class BayarDialog extends javax.swing.JDialog {
         }
     }
 
-    @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 

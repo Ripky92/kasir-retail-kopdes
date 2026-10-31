@@ -109,6 +109,8 @@ public class KasirUtamaForm extends javax.swing.JFrame {
         tblDetailRiwayat.getTableHeader().setBackground(KoneksiDB.WARNA_HEADER);
         tblDetailRiwayat.getTableHeader().setForeground(KoneksiDB.WARNA_TEKS_PUTIH);
 
+        inisialisasiModelTabel();
+
         btnTambahKeranjang.setBackground(KoneksiDB.WARNA_HEADER);
         btnTambahKeranjang.setForeground(KoneksiDB.WARNA_TEKS_PUTIH);
         btnProsesBayar.setBackground(KoneksiDB.WARNA_TOMBOL_BAYAR);
@@ -156,6 +158,70 @@ public class KasirUtamaForm extends javax.swing.JFrame {
         pasangPendengarInteraksi();
         pasangPintasanKeyboard();
         mulaiJamDigital();
+    }
+
+    private void inisialisasiModelTabel() {
+        tblKatalog.setModel(new DefaultTableModel(
+            new Object[][]{},
+            new String[]{"Kode", "Nama Barang", "Kategori", "Harga", "Stok"}
+        ) {
+            @Override
+            public boolean isCellEditable(int r, int c) {
+                return false;
+            }
+        });
+
+        tblKeranjang.setModel(new DefaultTableModel(
+            new Object[][]{},
+            new String[]{"Kode", "Nama Barang", "Harga", "Qty", "Subtotal"}
+        ) {
+            @Override
+            public boolean isCellEditable(int r, int c) {
+                return false;
+            }
+        });
+
+        tblStokBarang.setModel(new DefaultTableModel(
+            new Object[][]{},
+            new String[]{"Kode", "Nama Barang", "Kategori", "Harga", "Stok", "Status"}
+        ) {
+            @Override
+            public boolean isCellEditable(int r, int c) {
+                return false;
+            }
+        });
+
+        tblRiwayat.setModel(new DefaultTableModel(
+            new Object[][]{},
+            new String[]{"No. Nota", "Tanggal & Waktu", "Petugas", "Pembeli", "Metode Bayar", "Total Bayar"}
+        ) {
+            @Override
+            public boolean isCellEditable(int r, int c) {
+                return false;
+            }
+        });
+
+        tblDetailRiwayat.setModel(new DefaultTableModel(
+            new Object[][]{},
+            new String[]{"Kode Barang", "Nama Barang", "Harga Satuan", "Jumlah", "Subtotal Item"}
+        ) {
+            @Override
+            public boolean isCellEditable(int r, int c) {
+                return false;
+            }
+        });
+
+        tblKatalog.setRowHeight(28);
+        tblKeranjang.setRowHeight(28);
+        tblStokBarang.setRowHeight(28);
+        tblRiwayat.setRowHeight(28);
+        tblDetailRiwayat.setRowHeight(26);
+
+        tblKatalog.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tblKeranjang.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tblStokBarang.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tblRiwayat.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tblDetailRiwayat.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
     }
 
     private void aturHakAksesPeran() {
@@ -711,7 +777,6 @@ public class KasirUtamaForm extends javax.swing.JFrame {
         }
     }
 
-    @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -886,17 +951,7 @@ public class KasirUtamaForm extends javax.swing.JFrame {
 
         panelKiriKatalog.add(panelCariKatalog, java.awt.BorderLayout.NORTH);
 
-        tblKatalog.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
-        tblKatalog.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {},
-            new String [] { "Kode", "Nama Barang", "Kategori", "Harga", "Stok" }
-        ) {
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return false;
-            }
-        });
         tblKatalog.setRowHeight(28);
-        tblKatalog.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         scrollKatalog.setViewportView(tblKatalog);
 
         panelKiriKatalog.add(scrollKatalog, java.awt.BorderLayout.CENTER);
@@ -911,16 +966,12 @@ public class KasirUtamaForm extends javax.swing.JFrame {
         lblJumlahBeli.setFont(new java.awt.Font("SansSerif", 1, 13)); // NOI18N
         lblJumlahBeli.setText("Jumlah Beli:");
         panelBawahKatalog.add(lblJumlahBeli, java.awt.BorderLayout.WEST);
-
-        spnJumlahBeli.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
-        spnJumlahBeli.setPreferredSize(new java.awt.Dimension(90, 36));
         panelBawahKatalog.add(spnJumlahBeli, java.awt.BorderLayout.CENTER);
 
         btnTambahKeranjang.setBackground(new java.awt.Color(6, 95, 70));
         btnTambahKeranjang.setFont(new java.awt.Font("SansSerif", 1, 13)); // NOI18N
         btnTambahKeranjang.setForeground(new java.awt.Color(255, 255, 255));
         btnTambahKeranjang.setText("+ Tambah ke Keranjang");
-        btnTambahKeranjang.setPreferredSize(new java.awt.Dimension(220, 38));
         btnTambahKeranjang.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnTambahKeranjangActionPerformed(evt);
@@ -933,18 +984,13 @@ public class KasirUtamaForm extends javax.swing.JFrame {
         splitKasir.setLeftComponent(panelKiriKatalog);
 
         panelKananKeranjang.setBackground(new java.awt.Color(255, 255, 255));
-        panelKananKeranjang.setBorder(javax.swing.BorderFactory.createEmptyBorder(12, 12, 12, 12));
 
-        panelJenisPembeli.setBackground(new java.awt.Color(240, 253, 244));
-        panelJenisPembeli.setBorder(javax.swing.BorderFactory.createEmptyBorder(6, 10, 6, 10));
-        panelJenisPembeli.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 10, 2));
+        panelJenisPembeli.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
-        lblJenisPembeli.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
         lblJenisPembeli.setText("Pembeli:");
         panelJenisPembeli.add(lblJenisPembeli);
 
         grupPembeli.add(rbUmum);
-        rbUmum.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
         rbUmum.setSelected(true);
         rbUmum.setText("Umum");
         rbUmum.addActionListener(new java.awt.event.ActionListener() {
@@ -955,7 +1001,6 @@ public class KasirUtamaForm extends javax.swing.JFrame {
         panelJenisPembeli.add(rbUmum);
 
         grupPembeli.add(rbAnggota);
-        rbAnggota.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
         rbAnggota.setText("Anggota Kopdes (Diskon 5%)");
         rbAnggota.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -964,26 +1009,13 @@ public class KasirUtamaForm extends javax.swing.JFrame {
         });
         panelJenisPembeli.add(rbAnggota);
 
-        tblKeranjang.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
-        tblKeranjang.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {},
-            new String [] { "Kode", "Nama Barang", "Harga", "Qty", "Subtotal" }
-        ) {
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return false;
-            }
-        });
         tblKeranjang.setRowHeight(28);
-        tblKeranjang.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         scrollKeranjang.setViewportView(tblKeranjang);
 
-        lblStatusKeranjang.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         lblStatusKeranjang.setText("Keranjang masih kosong.");
 
-        panelAksiKeranjang.setBackground(new java.awt.Color(255, 255, 255));
         panelAksiKeranjang.setLayout(new java.awt.GridLayout(1, 4, 6, 0));
 
-        btnTambahQty.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
         btnTambahQty.setText("+ Qty");
         btnTambahQty.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -992,7 +1024,6 @@ public class KasirUtamaForm extends javax.swing.JFrame {
         });
         panelAksiKeranjang.add(btnTambahQty);
 
-        btnKurangQty.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
         btnKurangQty.setText("- Qty");
         btnKurangQty.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1001,7 +1032,6 @@ public class KasirUtamaForm extends javax.swing.JFrame {
         });
         panelAksiKeranjang.add(btnKurangQty);
 
-        btnHapusItem.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
         btnHapusItem.setText("Hapus Baris");
         btnHapusItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1010,7 +1040,6 @@ public class KasirUtamaForm extends javax.swing.JFrame {
         });
         panelAksiKeranjang.add(btnHapusItem);
 
-        btnKosongkanKeranjang.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
         btnKosongkanKeranjang.setText("Kosongkan");
         btnKosongkanKeranjang.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1019,27 +1048,16 @@ public class KasirUtamaForm extends javax.swing.JFrame {
         });
         panelAksiKeranjang.add(btnKosongkanKeranjang);
 
-        panelRingkasanTotal.setBackground(new java.awt.Color(236, 253, 245));
-        panelRingkasanTotal.setBorder(javax.swing.BorderFactory.createCompoundBorder(
-            javax.swing.BorderFactory.createLineBorder(new java.awt.Color(110, 231, 183)),
-            javax.swing.BorderFactory.createEmptyBorder(10, 14, 10, 14)));
-
-        lblSubtotalJudul.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
         lblSubtotalJudul.setText("Subtotal Belanja");
 
-        lblSubtotalNilai.setFont(new java.awt.Font("SansSerif", 1, 13)); // NOI18N
         lblSubtotalNilai.setText("Rp 0");
 
-        lblPotonganJudul.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
         lblPotonganJudul.setText("Potongan Anggota (5%)");
 
-        lblPotonganNilai.setFont(new java.awt.Font("SansSerif", 1, 13)); // NOI18N
         lblPotonganNilai.setText("Rp 0");
 
-        lblTotalBayarJudul.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
         lblTotalBayarJudul.setText("TOTAL BAYAR");
 
-        lblTotalBayarNilai.setFont(new java.awt.Font("SansSerif", 1, 22)); // NOI18N
         lblTotalBayarNilai.setText("Rp 0");
 
         javax.swing.GroupLayout panelRingkasanTotalLayout = new javax.swing.GroupLayout(panelRingkasanTotal);
@@ -1076,7 +1094,6 @@ public class KasirUtamaForm extends javax.swing.JFrame {
         );
 
         btnProsesBayar.setBackground(new java.awt.Color(194, 65, 12));
-        btnProsesBayar.setFont(new java.awt.Font("SansSerif", 1, 15)); // NOI18N
         btnProsesBayar.setForeground(new java.awt.Color(255, 255, 255));
         btnProsesBayar.setText("PROSES BAYAR (F8)");
         btnProsesBayar.addActionListener(new java.awt.event.ActionListener() {
@@ -1092,7 +1109,7 @@ public class KasirUtamaForm extends javax.swing.JFrame {
             .addComponent(panelJenisPembeli, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(scrollKeranjang, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
             .addComponent(lblStatusKeranjang, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(panelAksiKeranjang, javax.swing.GroupLayout.DEFAULT_SIZE, 480, Short.MAX_VALUE)
+            .addComponent(panelAksiKeranjang, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(panelRingkasanTotal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(btnProsesBayar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
@@ -1118,43 +1135,25 @@ public class KasirUtamaForm extends javax.swing.JFrame {
 
         tabMenuUtama.addTab("1. Transaksi Kasir", panelTabKasir);
 
-        panelTabStok.setBackground(new java.awt.Color(240, 253, 244));
-        panelTabStok.setBorder(javax.swing.BorderFactory.createEmptyBorder(12, 14, 14, 14));
         panelTabStok.setLayout(new java.awt.BorderLayout(0, 12));
 
-        panelFormBarang.setBackground(new java.awt.Color(255, 255, 255));
-        panelFormBarang.setBorder(javax.swing.BorderFactory.createCompoundBorder(
-            javax.swing.BorderFactory.createLineBorder(new java.awt.Color(167, 243, 208)),
-            javax.swing.BorderFactory.createEmptyBorder(14, 16, 14, 16)));
-
-        lblInfoAksesStok.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
         lblInfoAksesStok.setText("Kelola Data Stok Barang");
 
-        lblKodeBarang.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
         lblKodeBarang.setText("Kode Barang");
 
-        lblNamaBarang.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
         lblNamaBarang.setText("Nama Barang");
 
-        lblKategoriBarang.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
         lblKategoriBarang.setText("Kategori");
 
         cmbKategoriBarang.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Sembako", "Minuman", "Kebutuhan Rumah", "Lainnya" }));
 
-        lblHargaBarang.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
         lblHargaBarang.setText("Harga Jual (Rp)");
 
-        lblStokBarang.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
         lblStokBarang.setText("Jumlah Stok");
 
-        panelTombolCrud.setBackground(new java.awt.Color(255, 255, 255));
         panelTombolCrud.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 10, 0));
 
-        btnSimpanBarang.setBackground(new java.awt.Color(6, 95, 70));
-        btnSimpanBarang.setFont(new java.awt.Font("SansSerif", 1, 13)); // NOI18N
-        btnSimpanBarang.setForeground(new java.awt.Color(255, 255, 255));
         btnSimpanBarang.setText("Simpan Baru");
-        btnSimpanBarang.setPreferredSize(new java.awt.Dimension(135, 36));
         btnSimpanBarang.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnSimpanBarangActionPerformed(evt);
@@ -1162,9 +1161,7 @@ public class KasirUtamaForm extends javax.swing.JFrame {
         });
         panelTombolCrud.add(btnSimpanBarang);
 
-        btnUbahBarang.setFont(new java.awt.Font("SansSerif", 1, 13)); // NOI18N
         btnUbahBarang.setText("Perbarui Data");
-        btnUbahBarang.setPreferredSize(new java.awt.Dimension(140, 36));
         btnUbahBarang.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnUbahBarangActionPerformed(evt);
@@ -1172,11 +1169,7 @@ public class KasirUtamaForm extends javax.swing.JFrame {
         });
         panelTombolCrud.add(btnUbahBarang);
 
-        btnHapusBarang.setBackground(new java.awt.Color(185, 28, 28));
-        btnHapusBarang.setFont(new java.awt.Font("SansSerif", 1, 13)); // NOI18N
-        btnHapusBarang.setForeground(new java.awt.Color(255, 255, 255));
         btnHapusBarang.setText("Hapus Barang");
-        btnHapusBarang.setPreferredSize(new java.awt.Dimension(135, 36));
         btnHapusBarang.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnHapusBarangActionPerformed(evt);
@@ -1184,9 +1177,7 @@ public class KasirUtamaForm extends javax.swing.JFrame {
         });
         panelTombolCrud.add(btnHapusBarang);
 
-        btnBersihkanForm.setFont(new java.awt.Font("SansSerif", 1, 13)); // NOI18N
         btnBersihkanForm.setText("Bersihkan Form");
-        btnBersihkanForm.setPreferredSize(new java.awt.Dimension(145, 36));
         btnBersihkanForm.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnBersihkanFormActionPerformed(evt);
@@ -1206,7 +1197,7 @@ public class KasirUtamaForm extends javax.swing.JFrame {
                 .addGap(12, 12, 12)
                 .addGroup(panelFormBarangLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblNamaBarang)
-                    .addComponent(txtNamaBarang, javax.swing.GroupLayout.DEFAULT_SIZE, 320, Short.MAX_VALUE))
+                    .addComponent(txtNamaBarang))
                 .addGap(12, 12, 12)
                 .addGroup(panelFormBarangLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblKategoriBarang)
@@ -1245,33 +1236,14 @@ public class KasirUtamaForm extends javax.swing.JFrame {
 
         panelTabStok.add(panelFormBarang, java.awt.BorderLayout.NORTH);
 
-        tblStokBarang.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
-        tblStokBarang.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {},
-            new String [] { "Kode Barang", "Nama Barang", "Kategori", "Harga Jual", "Sisa Stok", "Status Stok" }
-        ) {
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return false;
-            }
-        });
-        tblStokBarang.setRowHeight(28);
-        tblStokBarang.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         scrollStokBarang.setViewportView(tblStokBarang);
 
         panelTabStok.add(scrollStokBarang, java.awt.BorderLayout.CENTER);
 
         tabMenuUtama.addTab("2. Kelola Data Barang", panelTabStok);
 
-        panelTabRiwayat.setBackground(new java.awt.Color(240, 253, 244));
-        panelTabRiwayat.setBorder(javax.swing.BorderFactory.createEmptyBorder(12, 14, 14, 14));
         panelTabRiwayat.setLayout(new java.awt.BorderLayout(0, 10));
 
-        panelAtasRiwayat.setBackground(new java.awt.Color(255, 255, 255));
-        panelAtasRiwayat.setBorder(javax.swing.BorderFactory.createCompoundBorder(
-            javax.swing.BorderFactory.createLineBorder(new java.awt.Color(167, 243, 208)),
-            javax.swing.BorderFactory.createEmptyBorder(12, 14, 12, 14)));
-
-        lblFilterPeriode.setFont(new java.awt.Font("SansSerif", 1, 13)); // NOI18N
         lblFilterPeriode.setText("Periode:");
 
         cmbPeriodeRiwayat.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Hari Ini", "Semua Transaksi" }));
@@ -1281,10 +1253,8 @@ public class KasirUtamaForm extends javax.swing.JFrame {
             }
         });
 
-        lblCariNota.setFont(new java.awt.Font("SansSerif", 1, 13)); // NOI18N
         lblCariNota.setText("No. Nota:");
 
-        btnMuatUlangRiwayat.setFont(new java.awt.Font("SansSerif", 1, 13)); // NOI18N
         btnMuatUlangRiwayat.setText("Tampilkan");
         btnMuatUlangRiwayat.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1292,11 +1262,8 @@ public class KasirUtamaForm extends javax.swing.JFrame {
             }
         });
 
-        lblRingkasanRiwayat.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
-        lblRingkasanRiwayat.setForeground(new java.awt.Color(6, 78, 59));
         lblRingkasanRiwayat.setText("Jumlah Transaksi: 0 nota   |   Total Pemasukan: Rp 0");
 
-        lblStatusRiwayat.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         lblStatusRiwayat.setText("Pilih baris nota untuk melihat rincian barang.");
 
         javax.swing.GroupLayout panelAtasRiwayatLayout = new javax.swing.GroupLayout(panelAtasRiwayat);
@@ -1313,7 +1280,7 @@ public class KasirUtamaForm extends javax.swing.JFrame {
                 .addComponent(txtCariNota, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(10, 10, 10)
                 .addComponent(btnMuatUlangRiwayat, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 80, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(lblRingkasanRiwayat))
             .addComponent(lblStatusRiwayat, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
@@ -1335,46 +1302,18 @@ public class KasirUtamaForm extends javax.swing.JFrame {
 
         splitRiwayat.setDividerLocation(260);
         splitRiwayat.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
-        splitRiwayat.setResizeWeight(0.55);
 
-        tblRiwayat.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
-        tblRiwayat.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {},
-            new String [] { "No. Nota", "Tanggal & Waktu", "Petugas", "Pembeli", "Metode Bayar", "Total Bayar" }
-        ) {
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return false;
-            }
-        });
-        tblRiwayat.setRowHeight(28);
-        tblRiwayat.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         scrollRiwayat.setViewportView(tblRiwayat);
 
         splitRiwayat.setTopComponent(scrollRiwayat);
 
-        panelBawahDetailRiwayat.setBackground(new java.awt.Color(255, 255, 255));
-        panelBawahDetailRiwayat.setBorder(javax.swing.BorderFactory.createEmptyBorder(8, 8, 8, 8));
         panelBawahDetailRiwayat.setLayout(new java.awt.BorderLayout(0, 8));
 
-        tblDetailRiwayat.setFont(new java.awt.Font("SansSerif", 0, 13)); // NOI18N
-        tblDetailRiwayat.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {},
-            new String [] { "Kode Barang", "Nama Barang", "Harga Satuan", "Jumlah", "Subtotal Item" }
-        ) {
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return false;
-            }
-        });
-        tblDetailRiwayat.setRowHeight(26);
         scrollDetailRiwayat.setViewportView(tblDetailRiwayat);
 
         panelBawahDetailRiwayat.add(scrollDetailRiwayat, java.awt.BorderLayout.CENTER);
 
-        btnBukaStruk.setBackground(new java.awt.Color(6, 95, 70));
-        btnBukaStruk.setFont(new java.awt.Font("SansSerif", 1, 13)); // NOI18N
-        btnBukaStruk.setForeground(new java.awt.Color(255, 255, 255));
         btnBukaStruk.setText("Buka & Cetak Ulang Struk");
-        btnBukaStruk.setPreferredSize(new java.awt.Dimension(220, 38));
         btnBukaStruk.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnBukaStrukActionPerformed(evt);

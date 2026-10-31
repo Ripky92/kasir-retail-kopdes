@@ -258,7 +258,7 @@ File ini adalah **"jantung penghubung database dan alat bantu berhitung Rupiah"*
 
 ---
 
-### 4.2 Bedah File 2: `LoginForm.java` (303 Baris)
+### 4.2 Bedah File 2: `LoginForm.java` (302 Baris)
 File ini adalah **pintu gerbang aplikasi** sekaligus tempat fungsi `public static void main` berada.
 
 - **Baris 15 - 58 (Konstruktor `LoginForm()` & `terapkanIdentitasDanLogo()`):**
@@ -282,7 +282,7 @@ File ini adalah **pintu gerbang aplikasi** sekaligus tempat fungsi `public stati
 
 ---
 
-### 4.3 Bedah File 3: `KasirUtamaForm.java` (1765 Baris)
+### 4.3 Bedah File 3: `KasirUtamaForm.java` (1704 Baris)
 Meskipun jumlah barisnya paling panjang karena memuat tata letak NetBeans untuk 3 tab sekaligus (`initComponents` memakan baris 716-1402), logika intinya terbagi rapi menjadi **4 bagian mudah**:
 
 #### A. Inisialisasi, Hak Akses, & Jam Digital (Baris 31 - 277)
@@ -317,24 +317,24 @@ Meskipun jumlah barisnya paling panjang karena memuat tata letak NetBeans untuk 
 
 ---
 
-### 4.4 Bedah File 4: `BayarDialog.java` (603 Baris)
+### 4.4 Bedah File 4: `BayarDialog.java` (601 Baris)
 File ini bertugas **menyelesaikan pembayaran dan menjamin keamanan penyimpanan transaksi ke database**.
 
 - **Baris 59 - 168 (`siapkanTampilanAwal`, `perbaruiModeMetodeBayar`, `hitungKembalianOtomatis`):**
   - Menampilkan ringkasan total tagihan dalam ukuran besar dan memasang pendengar ketikan pada `txtUangDiterima`.
   - Saat metode bayar diubah ke **QRIS**, `perbaruiModeMetodeBayar()` otomatis mengisi uang diterima sama persis dengan `totalBayar`, menonaktifkan tombol uang tunai cepat, dan menampilkan info kode QR (`qris-kopdes.png` atau kotak teks simulasi QRIS Koperasi Desa).
   - Saat metode **Tunai**, `hitungKembalianOtomatis()` menghitung `uangInput - totalBayar` secara langsung setiap kali angka diketik: jika uang kurang, pesan berwarna merah dan tombol Selesaikan dikunci; jika cukup, menampilkan nominal kembalian berwarna hijau tua.
-- **Baris 170 - 279 (`simpanTransaksiKeDatabase` & `jalankanTransaksiPadaKoneksi` - Bagian Paling Penting Saat Ditanya Dosen!):**
-  - Baris 210: `conn.setAutoCommit(false);` mematikan penyimpanan otomatis per kalimat SQL. Artinya tiga proses berikutnya dianggap **satu paket utuh (atomik)**.
-  - Proses 1 (Baris 214-232): Menyimpan 1 baris kepala nota ke tabel `transaksi`.
-  - Proses 2 & 3 (Baris 234-267): Untuk setiap barang di keranjang, menjalankan `UPDATE barang SET stok = stok - ? WHERE kode_barang = ? AND stok >= ?`. Syarat `AND stok >= ?` menjamin stok tidak mungkin tembus menjadi minus! Jika ada 1 saja barang yang stoknya kurang, `barisTerubah` bernilai `0` dan program langsung melempar error ke blok `catch`. Lalu menyimpan baris rincian ke `detail_transaksi`.
-  - Baris 269: `conn.commit();` mengesahkan seluruh perubahan secara permanen karena semua tahap berhasil.
-  - Baris 271-278: Jika terjadi gagal di tengah jalan, `conn.rollback()` dipanggil di dalam pengaman `try-catch` (`ex.addSuppressed`) untuk membatalkan semuanya kembali ke kondisi semula tanpa menutupi pesan penyebab utamanya.
-- **Baris 281 - 319 (`prosesPenyelesaianBayar`):** Memanggil `simpanTransaksiKeDatabase()`, menandai `transaksiBerhasil = true`, menutup dialog bayar, lalu membuka `StrukDialog` agar kasir bisa langsung melihat/mencetak nota.
+- **Baris 170 - 278 (`simpanTransaksiKeDatabase` & `jalankanTransaksiPadaKoneksi` - Bagian Paling Penting Saat Ditanya Dosen!):**
+  - Baris 209: `conn.setAutoCommit(false);` mematikan penyimpanan otomatis per kalimat SQL. Artinya tiga proses berikutnya dianggap **satu paket utuh (atomik)**.
+  - Proses 1 (Baris 213-231): Menyimpan 1 baris kepala nota ke tabel `transaksi`.
+  - Proses 2 & 3 (Baris 233-266): Untuk setiap barang di keranjang, menjalankan `UPDATE barang SET stok = stok - ? WHERE kode_barang = ? AND stok >= ?`. Syarat `AND stok >= ?` menjamin stok tidak mungkin tembus menjadi minus! Jika ada 1 saja barang yang stoknya kurang, `barisTerubah` bernilai `0` dan program langsung melempar error ke blok `catch`. Lalu menyimpan baris rincian ke `detail_transaksi`.
+  - Baris 268: `conn.commit();` mengesahkan seluruh perubahan secara permanen karena semua tahap berhasil.
+  - Baris 270-277: Jika terjadi gagal di tengah jalan, `conn.rollback()` dipanggil di dalam pengaman `try-catch` (`ex.addSuppressed`) untuk membatalkan semuanya kembali ke kondisi semula tanpa menutupi pesan penyebab utamanya.
+- **Baris 280 - 318 (`prosesPenyelesaianBayar`):** Memanggil `simpanTransaksiKeDatabase()`, menandai `transaksiBerhasil = true`, menutup dialog bayar, lalu membuka `StrukDialog` agar kasir bisa langsung melihat/mencetak nota.
 
 ---
 
-### 4.5 Bedah File 5: `StrukDialog.java` (223 Baris)
+### 4.5 Bedah File 5: `StrukDialog.java` (222 Baris)
 File ini mengatur **penyusunan teks nota belanja termal dan pencetakannya**.
 
 - **Baris 14 - 47 (Konstruktor & `terapkanGayaDanAksesibilitas`):**
