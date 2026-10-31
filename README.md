@@ -137,9 +137,9 @@ Saat mengedit kode bersama rekan, perhatikan aturan teknis berikut agar proyek t
 2. Tipe Data Uang Rupiah: Seluruh nominal harga, subtotal, potongan, tagihan, uang bayar, dan omset menggunakan tipe bilangan bulat 64-bit `long` untuk mencegah risiko *overflow* nominal besar serta menghindari pembulatan biner pecahan `double`. Gunakan metode `KoneksiDB.formatRupiah(long)` untuk menampilkan teks dan `KoneksiDB.parseNominalRupiah(String)` untuk membaca masukan ketikan pengguna.
 3. Transaksi Atomik: Proses penyelesaian transaksi kasir dibungkus dalam blok transaksi `conn.setAutoCommit(false)`, `conn.commit()`, dan `conn.rollback()` di `BayarDialog.java` untuk menjamin pemotongan stok barang dan pencatatan nota tersimpan secara utuh.
 4. Logo Kustom (Opsional): Aplikasi secara bawaan menampilkan teks `[RK]`. Jika ingin memasang logo buatan sendiri, simpan berkas gambar PNG ke dalam folder `src/main/resources/logo/`:
-   - `logo-ikon.png`: Ikon jendela dan header utama.
-   - `logo-login.png`: Logo kartu halaman login.
-   - `qris-kopdes.png`: Gambar kode QR saat memilih metode pembayaran QRIS.
+   - `logo-ikon.png` (atau `1.png`): Ikon jendela dan header utama toko Retail Kopdes.
+   - `logo-login.png` (atau `2.png`): Ikon kartu formulir login petugas.
+   - `qris-kopdes.png` (atau `3.png`): Gambar kode QR saat memilih metode pembayaran QRIS.
 
 ## 7. Dokumen Terkait
 

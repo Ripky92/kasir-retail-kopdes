@@ -237,27 +237,37 @@ public class KoneksiDB {
         if (namaFile == null || namaFile.isBlank()) {
             return null;
         }
-        try {
-            BufferedImage gambarAsli = null;
-            try (InputStream is = KoneksiDB.class.getResourceAsStream("/logo/" + namaFile)) {
-                if (is != null) {
-                    gambarAsli = ImageIO.read(is);
+        String[] daftarNama = switch (namaFile) {
+            case "logo-ikon.png" -> new String[]{"logo-ikon.png", "1.png", "logo.png"};
+            case "logo-login.png" -> new String[]{"logo-login.png", "2.png", "login.png"};
+            case "qris-kopdes.png" -> new String[]{"qris-kopdes.png", "3.png", "qris.png"};
+            default -> new String[]{namaFile};
+        };
+        for (String nama : daftarNama) {
+            try {
+                BufferedImage gambarAsli = null;
+                try (InputStream is = KoneksiDB.class.getResourceAsStream("/logo/" + nama)) {
+                    if (is != null) {
+                        gambarAsli = ImageIO.read(is);
+                    }
                 }
-            }
-            if (gambarAsli == null) {
-                File fileLokal = new File("src/main/resources/logo/" + namaFile);
-                if (fileLokal.isFile()) {
-                    gambarAsli = ImageIO.read(fileLokal);
+                if (gambarAsli == null) {
+                    File fileLokal = new File("src/main/resources/logo/" + nama);
+                    if (fileLokal.isFile()) {
+                        gambarAsli = ImageIO.read(fileLokal);
+                    }
                 }
+                if (gambarAsli != null) {
+                    double rasio = Math.min((double) lebar / gambarAsli.getWidth(), (double) tinggi / gambarAsli.getHeight());
+                    int targetW = Math.max(1, (int) Math.round(gambarAsli.getWidth() * rasio));
+                    int targetH = Math.max(1, (int) Math.round(gambarAsli.getHeight() * rasio));
+                    Image hasilSkala = gambarAsli.getScaledInstance(targetW, targetH, Image.SCALE_SMOOTH);
+                    return new ImageIcon(hasilSkala);
+                }
+            } catch (Exception ignored) {
             }
-            if (gambarAsli == null) {
-                return null;
-            }
-            Image hasilSkala = gambarAsli.getScaledInstance(lebar, tinggi, Image.SCALE_SMOOTH);
-            return new ImageIcon(hasilSkala);
-        } catch (Exception ex) {
-            return null;
         }
+        return null;
     }
 }
 

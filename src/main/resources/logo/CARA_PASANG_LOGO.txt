@@ -4,19 +4,19 @@ Folder ini disiapkan agar Anda bisa menambahkan gambar logo atau kode QRIS
 buatan sendiri kapan saja tanpa perlu mengubah logika program Java.
 
 Cukup simpan file berformat PNG ke dalam folder ini (src/main/resources/logo/)
-dengan salah satu nama persis berikut:
+dengan salah satu nama berikut (nama standar maupun angka 1, 2, 3 otomatis dikenali):
 
-1. logo-ikon.png
+1. logo-ikon.png (atau 1.png)
    - Ukuran saran : 128 x 128 piksel (persegi, latar belakang transparan)
-   - Lokasi tampil: Pojok kiri Header Utama (menggantikan lencana teks [RK])
+   - Lokasi tampil: Header jendela Login dan Header Utama Kasir
                     sekaligus menjadi ikon aplikasi di taskbar/titlebar.
 
-2. logo-login.png
-   - Ukuran saran : 200 x 80 piksel (horizontal/persegi, latar transparan)
-   - Lokasi tampil: Bagian atas kartu Halaman Login saat aplikasi pertama dibuka.
+2. logo-login.png (atau 2.png)
+   - Ukuran saran : 128 x 128 piksel atau horizontal
+   - Lokasi tampil: Kartu formulir Login sebagai ikon petunjuk akun petugas.
 
-3. qris-kopdes.png
-   - Ukuran saran : 220 x 220 piksel (persegi)
+3. qris-kopdes.png (atau 3.png)
+   - Ukuran saran : 160 x 160 hingga 220 x 220 piksel (persegi)
    - Lokasi tampil: Dialog Pembayaran saat metode bayar QRIS dipilih.
 
 Setelah menaruh file PNG di folder ini, jalankan ulang proyek (Clean & Build / Run

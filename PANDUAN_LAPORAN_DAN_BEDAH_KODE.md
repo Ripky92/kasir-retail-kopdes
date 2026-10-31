@@ -230,7 +230,7 @@ Bagian ini menjelaskan isi setiap file dari atas ke bawah dengan bahasa sehari-h
 
 ---
 
-### 4.1 Bedah File 1: `KoneksiDB.java` (263 Baris)
+### 4.1 Bedah File 1: `KoneksiDB.java` (273 Baris)
 File ini adalah **"jantung penghubung database dan alat bantu berhitung Rupiah"** yang dipanggil oleh keempat form lainnya.
 
 - **Baris 1 - 19 (`package` & `import`):** Mendeklarasikan paket `com.kopdes` dan memanggil pustaka bawaan Java (`java.sql.*` untuk database JDBC, `java.awt.Color` & `Image` untuk warna dan logo, `DecimalFormat` untuk pemisah titik ribuan Indonesia).
@@ -258,7 +258,7 @@ File ini adalah **"jantung penghubung database dan alat bantu berhitung Rupiah"*
 
 ---
 
-### 4.2 Bedah File 2: `LoginForm.java` (301 Baris)
+### 4.2 Bedah File 2: `LoginForm.java` (309 Baris)
 File ini adalah **pintu gerbang aplikasi** sekaligus tempat fungsi `public static void main` berada.
 
 - **Baris 15 - 58 (Konstruktor `LoginForm()` & `terapkanIdentitasDanLogo()`):**

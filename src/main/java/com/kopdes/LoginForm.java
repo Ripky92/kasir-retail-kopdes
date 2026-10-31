@@ -45,13 +45,21 @@ public class LoginForm extends javax.swing.JFrame {
             setIconImage(ikonJendela.getImage());
         }
 
-        ImageIcon logoLogin = KoneksiDB.muatLogoOpsional("logo-login.png", 180, 64);
-        if (logoLogin != null) {
+        ImageIcon logoHeader = KoneksiDB.muatLogoOpsional("logo-ikon.png", 64, 64);
+        if (logoHeader == null) {
+            logoHeader = KoneksiDB.muatLogoOpsional("logo-login.png", 64, 64);
+        }
+        if (logoHeader != null) {
             lblLogoAtauTeks.setText("");
-            lblLogoAtauTeks.setIcon(logoLogin);
+            lblLogoAtauTeks.setIcon(logoHeader);
         } else {
             lblLogoAtauTeks.setText("[RK]");
             lblLogoAtauTeks.setForeground(KoneksiDB.WARNA_TEKS_PUTIH);
+        }
+
+        ImageIcon ikonLoginCard = KoneksiDB.muatLogoOpsional("logo-login.png", 18, 18);
+        if (ikonLoginCard != null) {
+            lblPesan.setIcon(ikonLoginCard);
         }
 
         getRootPane().setDefaultButton(btnMasuk);
